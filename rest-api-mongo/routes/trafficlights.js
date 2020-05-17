@@ -1,4 +1,4 @@
-//File: routers/routers.js
+//File: trafficlights/trafficlights.js
 // 1 - Colección no pudo ser obtenida
 // 2 - Error para encontrar un ID
 // 3 - Error al guardar con un registro
@@ -10,218 +10,146 @@
 
 module.exports = function (app) {
 
-  var RouterCollection = require('../models/trafficlights');
-  const fs = require('fs');
-  const fields = [
-    'noeco', 
-    'mac', 
-    'email', 
-    'edad', 
-    'cp', 
-    'genero', 
-    'urlfoto', 
-    'ap1',
-    'ap2',
-    'nombre',
-    'tipo',
-    'fase'
-  ];
+  var TrafficlightCollection = require('../models/trafficlights');
 
-  writeOnFile = text => {
-    fs.appendFile('errors.txt', text + '\n', function (err) {
-      if (err) {
-        console.log('ERROR: ' + err);
-      }
-    });
-  };
-
-  checkKeys = keys => {
-    output = true;
-    keys.forEach(key => {
-      output = output && fields.includes(key);
-    });
-    return output;
-  };
-
-  checkGender = genero => ['hombre', 'mujer', 'femenino', 'masculino', ''].includes(genero);
-
-  //GET - Return all routers in the DB
-  findAllRouters = (req, res) => {
-    RouterCollection.find(function (err, routers) {
+  //GET - Return all trafficlights in the DB
+  findAllTrafficlights = (req, res) => {
+    TrafficlightCollection.find(function (err, trafficlights) {
       if (!err) {
-        console.log('GET /routers')
-        res.send(routers);
+        console.log('GET /trafficlights')
+        res.send(trafficlights);
       } else {
         console.log('ERROR: ' + err);
-        writeOnFile('findAllRouters,1,');
-        res.status(404).send('Error 1');
+        res.status(404).send('ERROR: ' + err);
       }
     });
   };
 
-  //GET - Return a Router with specified ID
+  //GET - Return a Trafficlight with specified ID
   findById = (req, res) => {
-    RouterCollection.findById(req.params.id, (err, router) => {
+    TrafficlightCollection.findById(req.params.id, (err, trafficlight) => {
       if (!err) {
-        console.log('GET /router/' + req.params.id);
-        res.send(router);
+        console.log('GET /trafficlight/' + req.params.id);
+        res.send(trafficlight);
       } else {
         console.log('ERROR: ' + err);
-        writeOnFile('findById,2,' + req.params.id);
-        res.status(404).send('ERROR: 2');
+        res.status(404).send('ERROR: ' + err);
       }
     });
   };
 
-  //POST - Insert a new Router in the DB
-  addRouter = (req, res) => {
+  //POST - Insert a new Trafficlight in the DB
+  addTrafficlight = (req, res) => {
     console.log('POST');
     console.log(req.body);
 
-    if (checkKeys(Object.keys(req.body))) {
-      if (checkGender(req.body.genero)) {
-        var router = new RouterCollection({
-          noeco: req.body.noeco,
-          mac: req.body.mac,
-          email: req.body.email,
-          edad: req.body.edad,
-          cp: req.body.cp,
-          genero: req.body.genero,
-          urlfoto: req.body.urlfoto,
-          ap1: req.body.ap1,
-          ap2: req.body.ap2,
-          nombre: req.body.nombre,
-          tipo: req.body.tipo,
-          fase: req.body.fase
-        });
+    var trafficlight = new TrafficlightCollection({
+      noeco: req.body.noeco,
+      mac: req.body.mac,
+      email: req.body.email,
+      edad: req.body.edad,
+      cp: req.body.cp,
+      genero: req.body.genero,
+      urlfoto: req.body.urlfoto,
+      ap1: req.body.ap1,
+      ap2: req.body.ap2,
+      nombre: req.body.nombre,
+      tipo: req.body.tipo,
+      fase: req.body.fase
+    });
 
-        router.save(err => {
-          if (!err) {
-            console.log('Created');
-          } else {
-            console.log('ERROR: ' + err);
-            writeOnFile('addRouter,3,' + JSON.stringify(req.body));
-            res.status(404).send('ERROR: 3');
-          }
-        });
+    trafficlight.save(err => {
+      if (!err) {
+        console.log('Created');
       } else {
-        console.log('ERROR: Gender is not correct');
-        writeOnFile('addRouter,5,' + JSON.stringify(req.body));
-        res.status(404).send('Error 5');
+        console.log('ERROR: ' + err);
+        res.status(404).send('ERROR: ' + err);
       }
-    } else {
-      console.log('ERROR: Keys not corresponding');
-      writeOnFile('addRouter,6,' + JSON.stringify(req.body));
-      res.status(404).send('Error: 6');
-    }
+    });
 
-    res.send(router);
+    res.send(trafficlight);
   };
 
-  //POST - Insert a new Router in the DB
-  addManyRouters = (req, res) => {
+  //POST - Insert a new Trafficlight in the DB
+  addManyTrafficlights = (req, res) => {
     console.log('POST');
     console.log('Many (length): ' + req.body.length);
 
-    var router;
-    var routers = [];
+    var trafficlight;
+    var trafficlights = [];
     var i = 1;
 
     req.body.forEach(element => {
-      if (checkKeys(Object.keys(req.body))) {
-        if (checkGender(element.genero)) {
-          router = new RouterCollection({
-            noeco: element.noeco,
-            mac: element.mac,
-            email: element.email,
-            edad: element.edad,
-            cp: element.cp,
-            genero: element.genero,
-            urlfoto: element.urlfoto,
-            ap1: element.ap1,
-            ap2: element.ap2,
-            nombre: element.nombre,
-            tipo: element.tipo,
-            fase: element.fase
-          });
+      trafficlight = new TrafficlightCollection({
+        noeco: element.noeco,
+        mac: element.mac,
+        email: element.email,
+        edad: element.edad,
+        cp: element.cp,
+        genero: element.genero,
+        urlfoto: element.urlfoto,
+        ap1: element.ap1,
+        ap2: element.ap2,
+        nombre: element.nombre,
+        tipo: element.tipo,
+        fase: element.fase
+      });
 
-          router.save(err => {
-            if (!err) {
-              console.log('Created ' + i + ' of ' + req.body.length);
-            } else {
-              console.log('ERROR: ' + err);
-              writeOnFile('addManyRouters,7,' + element);
-              res.status(404).send('Error 4');
-            }
-          });
-
-          routers.push(router);
+      trafficlight.save(err => {
+        if (!err) {
+          console.log('Created ' + i + ' of ' + req.body.length);
         } else {
-          console.log('ERROR: Gender is not correct');
-          writeOnFile('addRouter,5,' + JSON.stringify(req.body));
-          res.status(404).send('Error: 5');
+          console.log('ERROR: ' + err);
+          res.status(404).send('ERROR: ' + err);
         }
-      } else {
-        console.log('ERROR: Keys not corresponding');
-        writeOnFile('addRouter,6,' + element);
-        res.status(404).send('Error: 6');
-      }
+      });
+
+      trafficlights.push(trafficlight);
       i++;
     });
 
-    res.send(routers);
+    res.send(trafficlights);
   };
 
   //PUT - Update a register already exists
-  updateRouter = (req, res) => {
-    RouterCollection.findById(req.params.id, (_, router) => {
-      router.mac = req.body.mac;
-      router.email = req.body.email;
-      router.edad = req.body.edad;
-      router.cp = req.body.cp;
-      router.genero = req.body.genero;
-      router.urlfoto = req.body.urlfoto;
-      router.ap1 = req.body.ap1;
-      router.ap2 = req.body.ap2;
-      router.nombre = req.body.nombre;
-      router.tipo = req.body.tipo;
-      router.fase = req.body.fase;
+  updateTrafficlight = (req, res) => {
+    TrafficlightCollection.findById(req.params.id, (_, trafficlight) => {
+      trafficlight.identifier = req.body.identifier;
+      trafficlight.total = req.body.total;
 
-      router.save(err => {
+      trafficlight.save(err => {
         if (!err) {
           console.log('Updated');
         } else {
           console.log('ERROR: ' + err);
-          writeOnFile('updateRouter,7,' + JSON.stringify(req.body));
-          res.status(500).send('Error: 7');
+          res.status(500).send('ERROR: ' + err);
         }
-        res.send(router);
+        res.send(trafficlight);
       });
     });
   }
 
-  //DELETE - Delete a Router with specified ID
-  deleteRouter = (req, res) => {
-    RouterCollection.findById(req.params.id, (_, router) => {
-      router.remove(err => {
+  //DELETE - Delete a Trafficlight with specified ID
+  deleteTrafficlight = (req, res) => {
+    TrafficlightCollection.findById(req.params.id, (_, trafficlight) => {
+      trafficlight.remove(err => {
         if (!err) {
           console.log('Removed');
         } else {
           console.log('ERROR: ' + err);
-          writeOnFile('deleteRouter,8,' + JSON.stringify(req.body));
-          res.status(500).send('Error: 8');
+          res.status(500).send('ERROR: ' + err);
         }
-        res.send(router);
+        res.send(trafficlight);
       })
     });
   }
 
-  //Link routers and functions
-  app.get('/routers', findAllRouters);
-  app.get('/router/:id', findById);
-  app.post('/router', addRouter);
-  app.post('/routers', addManyRouters);
-  app.put('/router/:id', updateRouter);
-  app.delete('/router/:id', deleteRouter);
+  //Link trafficlights and functions
+  app.get('/trafficlights', findAllTrafficlights);
+  app.get('/trafficlights/:id', findById);
+  app.post('/trafficlight', addTrafficlight);
+  app.post('/trafficlights', addManyTrafficlights);
+  app.put('/trafficlight/:id', updateTrafficlight);
+  app.delete('/trafficlight/:id', deleteTrafficlight);
 
 }
