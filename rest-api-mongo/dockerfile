@@ -3,7 +3,7 @@ FROM node:10.16.0
 COPY . /rest-api
 WORKDIR /rest-api
 
-RUN npm install nodemon -g
 RUN npm install
+RUN npm install nodemon -g
 
 ENTRYPOINT [ "nodemon", "app.js" ]
