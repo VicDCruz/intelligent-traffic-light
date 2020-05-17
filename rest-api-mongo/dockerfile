@@ -1,0 +1,9 @@
+FROM 10.16.0
+
+COPY . /rest-api
+WORKDIR /rest-api
+
+RUN npm install nodemon -g
+RUN npm install
+
+ENTRYPOINT [ "nodemon", "app.js" ]
