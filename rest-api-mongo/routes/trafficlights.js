@@ -12,6 +12,11 @@ module.exports = function (app) {
 
   var TrafficlightCollection = require('../models/trafficlights');
 
+  changeBehavior = (value, id, identifier) => {
+    output = { _id: id, identifier: identifier, total: value, behavior: "valor" };
+    return output;
+  };
+
   //GET - Return all trafficlights in the DB
   findAllTrafficlights = (req, res) => {
     TrafficlightCollection.find(function (err, trafficlights) {
@@ -44,18 +49,8 @@ module.exports = function (app) {
     console.log(req.body);
 
     var trafficlight = new TrafficlightCollection({
-      noeco: req.body.noeco,
-      mac: req.body.mac,
-      email: req.body.email,
-      edad: req.body.edad,
-      cp: req.body.cp,
-      genero: req.body.genero,
-      urlfoto: req.body.urlfoto,
-      ap1: req.body.ap1,
-      ap2: req.body.ap2,
-      nombre: req.body.nombre,
-      tipo: req.body.tipo,
-      fase: req.body.fase
+      identifier: req.body.identifier,
+      total: req.body.total,
     });
 
     trafficlight.save(err => {
@@ -67,7 +62,7 @@ module.exports = function (app) {
       }
     });
 
-    res.send(trafficlight);
+    res.send(changeBehavior(req.body.total, trafficlight._id, req.body.identifier));
   };
 
   //POST - Insert a new Trafficlight in the DB
@@ -81,18 +76,8 @@ module.exports = function (app) {
 
     req.body.forEach(element => {
       trafficlight = new TrafficlightCollection({
-        noeco: element.noeco,
-        mac: element.mac,
-        email: element.email,
-        edad: element.edad,
-        cp: element.cp,
-        genero: element.genero,
-        urlfoto: element.urlfoto,
-        ap1: element.ap1,
-        ap2: element.ap2,
-        nombre: element.nombre,
-        tipo: element.tipo,
-        fase: element.fase
+        identifier: element.identifier,
+        total: element.total,
       });
 
       trafficlight.save(err => {
