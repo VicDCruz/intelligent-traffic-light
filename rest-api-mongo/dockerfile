@@ -4,6 +4,5 @@ COPY . /rest-api
 WORKDIR /rest-api
 
 RUN npm install
-RUN npm install nodemon -g
 
-ENTRYPOINT [ "nodemon", "app.js" ]
+ENTRYPOINT [ "npm", "run", "dev" ]
