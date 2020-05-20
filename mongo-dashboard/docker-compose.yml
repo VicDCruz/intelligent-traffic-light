@@ -1,0 +1,31 @@
+version: "3"
+services: 
+  cube:
+    image: cubejs
+    volumes: 
+      - './real-time-dashboard:/real-time-dashboard'
+      - '/real-time-dashboard/node_modules'
+      - './dashboard-app:/real-time-dashboard/dashboard-app'
+      - '/real-time-dashboard/dashboard-app/node_modules'
+      - ./:/output
+    ports:
+      - 3000:3000
+      - 4000:4000
+    # tty: true
+    container_name: cube
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+  cube_db:
+    image: "juky/mongobi"
+    ports:
+      - 3307:3307
+    volumes: 
+      - "./mongosqld/mongosqld.conf:/home/mongobi/mongosqld.conf"
+      - "./mongosqld/logs:/logs"
+    container_name: cube_db
+  db:
+      image: "mongo:4.0.5"
+      ports:
+        - 27017:27017
+      container_name: db
+      

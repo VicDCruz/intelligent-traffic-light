@@ -1,0 +1,12 @@
+{
+  "name": "real-time-dashboard",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "@cubejs-backend/mongobi-driver": "^0.19.17",
+    "@cubejs-backend/server": "^0.19.18"
+  }
+}

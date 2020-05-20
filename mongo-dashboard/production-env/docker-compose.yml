@@ -1,0 +1,13 @@
+redis_db:
+  image: redis
+  ports:
+    - "6379"
+
+cube:
+  build: .
+  env_file: .env
+  expose:
+    - "4000"
+  command: node index.js
+  links:
+    - redis_db

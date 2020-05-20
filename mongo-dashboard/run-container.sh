@@ -1,0 +1,1 @@
+docker run -itd -v //`pwd`:/source --name dashboard cubejs
