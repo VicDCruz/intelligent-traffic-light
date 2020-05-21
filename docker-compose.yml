@@ -4,15 +4,56 @@ services:
     rest:
         image: "traffic-controller"
         volumes:
-            - "./rest-api-mongo/:/rest-api"
+            - './rest-api-mongo/:/rest-api'
         ports: 
             - 80:80
+        container_name: rest
+        environment:
+            - CHOKIDAR_USEPOLLING=true
     db:
         image: "mongo:4.0.5"
         ports:
-        - 27017:27017
+            - 27017:27017
         container_name: db
         restart: always
         environment: 
             MONGO_INITDB_DATABASE: trafficlights
-    # ngrok:
+        volumes: 
+            - ./history.json:/history.json
+        # command: "mongoimport --host localhost --db trafficlights --collection history --file /history.json"
+
+    ngrok:
+        image: wernight/ngrok
+        container_name: ngrok
+        ports:
+            - 4040:4040
+        links:
+            - rest
+        environment:
+            - NGROK_PORT=rest:80
+
+    cube:
+        image: cubejs
+        volumes: 
+            - './mongo-dashboard/real-time-dashboard:/real-time-dashboard'
+            - '/real-time-dashboard/node_modules'
+            - './mongo-dashboard/dashboard-app:/real-time-dashboard/dashboard-app'
+            - '/real-time-dashboard/dashboard-app/node_modules'
+            - './mongo-dashboard/:/output'
+            - './init.sh:/init.sh'
+            - './history.json:/history.json'
+        ports:
+            - 3000:3000
+            - 4000:4000
+        # tty: true
+        container_name: cube
+        environment:
+            - CHOKIDAR_USEPOLLING=true
+    cube_db:
+        image: "juky/mongobi"
+        ports:
+            - 3307:3307
+        volumes: 
+            - "./mongo-dashboard/mongosqld/mongosqld.conf:/home/mongobi/mongosqld.conf"
+            - "./mongo-dashboard/mongosqld/logs:/logs"
+        container_name: cube_db
