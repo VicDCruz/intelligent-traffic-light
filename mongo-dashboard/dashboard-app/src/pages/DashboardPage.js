@@ -4,7 +4,21 @@ import Typography from "@material-ui/core/Typography";
 import ChartRenderer from "../components/ChartRenderer";
 import Dashboard from "../components/Dashboard";
 import DashboardItem from "../components/DashboardItem";
-const DashboardItems = [];
+const DashboardItems = [
+  {
+    id: 0,
+    name: "New Chart",
+    vizState: {
+      query: {
+        measures: ["History.count"],
+        timeDimensions: [],
+        dimensions: [],
+        filters: []
+      },
+      chartType: "number"
+    }
+  }
+];
 
 const DashboardPage = () => {
   const dashboardItem = item => (
