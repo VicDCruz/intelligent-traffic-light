@@ -20,8 +20,6 @@ services:
             MONGO_INITDB_DATABASE: trafficlights
         volumes: 
             - ./history.json:/history.json
-        # command: "mongoimport --host localhost --db trafficlights --collection history --file /history.json"
-
     ngrok:
         image: wernight/ngrok
         container_name: ngrok
@@ -31,7 +29,6 @@ services:
             - rest
         environment:
             - NGROK_PORT=rest:80
-
     cube:
         image: cubejs
         volumes: 
@@ -40,20 +37,24 @@ services:
             - './mongo-dashboard/dashboard-app:/real-time-dashboard/dashboard-app'
             - '/real-time-dashboard/dashboard-app/node_modules'
             - './mongo-dashboard/:/output'
-            - './init.sh:/init.sh'
             - './history.json:/history.json'
+            - './mongo-dashboard/start-cube.sh:/start-cube.sh'
         ports:
             - 3000:3000
             - 4000:4000
-        # tty: true
+        working_dir: /
         container_name: cube
         environment:
             - CHOKIDAR_USEPOLLING=true
+        depends_on: 
+            - db
     cube_db:
-        image: "juky/mongobi"
+        image: "mongobi"
         ports:
             - 3307:3307
         volumes: 
-            - "./mongo-dashboard/mongosqld/mongosqld.conf:/home/mongobi/mongosqld.conf"
-            - "./mongo-dashboard/mongosqld/logs:/logs"
+            - "./mongo-dashboard/mongosqld/mongosqld.conf:/mongosqld.conf"
+        restart: always
+        depends_on: 
+            - cube
         container_name: cube_db

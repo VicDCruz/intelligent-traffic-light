@@ -21,9 +21,13 @@ RUN npm install
 ENV PATH /real-time-dashboard/node_modules/.bin:$PATH
 ENV PATH /real-time-dashboard/dashboard-app/node_modules/.bin:$PATH
 
-WORKDIR /real-time-dashboard
+WORKDIR /
+
+COPY start-cube.sh start-cube.sh
+RUN chmod +x start-cube.sh
 
 EXPOSE 4000
 EXPOSE 3000
 
-ENTRYPOINT [ "npm", "run", "dev" ]
+# ENTRYPOINT [ "npm", "run", "dev" ]
+ENTRYPOINT [ "sh", "./start-cube.sh" ]

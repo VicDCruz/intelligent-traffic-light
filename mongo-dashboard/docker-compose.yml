@@ -16,12 +16,13 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
   cube_db:
-    image: "juky/mongobi"
+    image: "mongobi"
     ports:
       - 3307:3307
     volumes: 
-      - "./mongosqld/mongosqld.conf:/home/mongobi/mongosqld.conf"
-      - "./mongosqld/logs:/logs"
+      - "./mongosqld/mongosqld.conf:/mongosqld.conf"
+      - "./mongosqld/init.sh:/mongodb-bi/init.sh"
+    restart: always
     container_name: cube_db
   db:
       image: "mongo:4.0.5"
