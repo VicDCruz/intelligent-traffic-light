@@ -1,18 +1,18 @@
 import React from "react";
-import Grid from "@material-ui/core/Grid";
+import { Row } from "antd";
 
 const Dashboard = ({ children }) => (
-  <Grid
-    container
-    spacing={3}
-    style={{
-      padding: 24
-    }}
+  <Row
+    type="flex"
     justify="space-around"
-    alignItems="flex-start"
+    align="top"
+    gutter={24}
+    style={{
+      margin: "25px 0"
+    }}
   >
     {children}
-  </Grid>
+  </Row>
 );
 
 export default Dashboard;

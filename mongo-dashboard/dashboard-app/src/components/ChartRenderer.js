@@ -1,131 +1,139 @@
 import React from "react";
 import PropTypes from "prop-types";
+import moment from "moment";
 import { useCubeQuery } from "@cubejs-client/react";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { Chart, Axis, Tooltip, Geom, Coord, Legend } from "bizcharts";
-import Typography from "@material-ui/core/Typography";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
+import { Spin, Row, Col, Statistic, Table } from "antd";
+import { Line, Bar, Pie } from "react-chartjs-2";
 
-const stackedChartData = resultSet => {
-  const data = resultSet
-    .pivot()
-    .map(({ xValues, yValuesArray }) =>
-      yValuesArray.map(([yValues, m]) => ({
-        x: resultSet.axisValuesString(xValues, ", "),
-        color: resultSet.axisValuesString(yValues, ", "),
-        measure: m && Number.parseFloat(m)
-      }))
-    )
-    .reduce((a, b) => a.concat(b), []);
-  return data;
-};
-
+const COLORS_SERIES = ["#149799", "#86FFBC", "#FFC7D2"];
+const MONOCHROMATIC_SERIES = ["#06B85C", "#2B8456", "#036B35", "#79B897", "#02381C", "#86B89E", "#39845D", "#4E6B5C"];
 const TypeToChartComponent = {
-  line: ({ resultSet }) => (
-    <Chart
-      scale={{
-        x: {
-          tickCount: 8
+  line: ({ resultSet }) => {
+    const data = {
+      labels: resultSet.categories().map(c => c.category),
+      datasets: resultSet.series().map((s, index) => ({
+        label: s.title,
+        data: s.series.map(r => r.value),
+        borderColor: COLORS_SERIES[index],
+        fill: false
+      }))
+    };
+    const options = {
+      legend: {
+        display: false
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            precision: 0,
+            min: 0
+          }
+        }]
+      }
+    };
+    return <Line height={157} data={data} options={options} />;
+  },
+  bar: ({ resultSet }) => {
+    const data = {
+      labels: resultSet.categories().map(c => c.category),
+      datasets: resultSet.series().map((s, index) => ({
+        label: s.title,
+        data: s.series.map(r => r.value),
+        backgroundColor: COLORS_SERIES[index]
+      }))
+    };
+    const options = {
+      legend: {
+        display: false
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            precision: 0,
+            min: 0
+          }
+        }],
+        xAxes: [
+          {
+            stacked: true
+          },
+        ]
+      }
+    };
+    return <Bar height={157} data={data} options={options} />;
+  },
+  area: ({ resultSet }) => {
+    const data = {
+      labels: resultSet.categories().map(c => c.category),
+      datasets: resultSet.series().map((s, index) => ({
+        label: s.title,
+        data: s.series.map(r => r.value),
+        backgroundColor: COLORS_SERIES[index]
+      }))
+    };
+    const options = {
+      scales: {
+        yAxes: [
+          {
+            stacked: true
+          }
+        ]
+      }
+    };
+    return <Line data={data} options={options} />;
+  },
+  pie: ({ resultSet }) => {
+    const data = {
+      labels: resultSet.categories().map(c => c.category),
+      datasets: resultSet.series().map(s => ({
+        label: s.title,
+        data: s.series.map(r => r.value),
+        backgroundColor: MONOCHROMATIC_SERIES,
+        hoverBackgroundColor: MONOCHROMATIC_SERIES
+      }))
+    };
+    const options = {};
+    return <Pie data={data} options={options} />;
+  },
+  table: ({ resultSet }) => (
+    <Table
+      pagination={false}
+      columns={[
+        { title: "Anonymous ID", dataIndex: "Events.anonymousId" },
+        { title: "Event Type", dataIndex: "Events.eventType" },
+        { title: "Time", dataIndex: "Events.minutesAgoHumanized"}
+      ]}
+      dataSource={resultSet.tablePivot().map((row) => {
+        const addMinsAgo = (text) => {
+          if (text.toString().match(/minute/)) {
+            return text;
+          } else {
+            return `${text} minutes ago`;
+          }
         }
-      }}
-      height={400}
-      data={stackedChartData(resultSet)}
-      forceFit
-    >
-      <Axis name="x" />
-      <Axis name="measure" />
-      <Tooltip
-        crosshairs={{
-          type: "y"
-        }}
-      />
-      <Geom type="line" position={`x*measure`} size={2} color="color" />
-    </Chart>
-  ),
-  bar: ({ resultSet }) => (
-    <Chart
-      scale={{
-        x: {
-          tickCount: 8
+        return {
+          "Events.anonymousId": row["Events.anonymousId"],
+          "Events.eventType": row["Events.eventType"],
+          "Events.minutesAgoHumanized": addMinsAgo(row["Events.minutesAgoHumanized"])
         }
-      }}
-      height={400}
-      data={stackedChartData(resultSet)}
-      forceFit
-    >
-      <Axis name="x" />
-      <Axis name="measure" />
-      <Tooltip />
-      <Geom type="intervalStack" position={`x*measure`} color="color" />
-    </Chart>
-  ),
-  area: ({ resultSet }) => (
-    <Chart
-      scale={{
-        x: {
-          tickCount: 8
-        }
-      }}
-      height={400}
-      data={stackedChartData(resultSet)}
-      forceFit
-    >
-      <Axis name="x" />
-      <Axis name="measure" />
-      <Tooltip
-        crosshairs={{
-          type: "y"
-        }}
-      />
-      <Geom type="areaStack" position={`x*measure`} size={2} color="color" />
-    </Chart>
-  ),
-  pie: ({ resultSet }) => (
-    <Chart height={400} data={resultSet.chartPivot()} forceFit>
-      <Coord type="theta" radius={0.75} />
-      {resultSet.seriesNames().map(s => (
-        <Axis name={s.key} />
-      ))}
-      <Legend position="right" />
-      <Tooltip />
-      {resultSet.seriesNames().map(s => (
-        <Geom type="intervalStack" position={s.key} color="category" />
-      ))}
-    </Chart>
+      })}
+    />
   ),
   number: ({ resultSet }) => (
-    <Typography
-      variant="h4"
+    <Row
+      type="flex"
+      justify="center"
+      align="middle"
       style={{
-        textAlign: "center"
+        height: "100%"
       }}
     >
-      {resultSet.seriesNames().map(s => resultSet.totalRow()[s.key])}
-    </Typography>
-  ),
-  table: ({ resultSet }) => (
-    <Table aria-label="simple table">
-      <TableHead>
-        <TableRow>
-          {resultSet.tableColumns().map(c => (
-            <TableCell key={c.key}>{c.title}</TableCell>
-          ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {resultSet.tablePivot().map((row, index) => (
-          <TableRow key={index}>
-            {resultSet.tableColumns().map(c => (
-              <TableCell key={c.key}>{row[c.key]}</TableCell>
-            ))}
-          </TableRow>
+      <Col>
+        {resultSet.seriesNames().map(s => (
+          <Statistic value={resultSet.totalRow()[s.key]} />
         ))}
-      </TableBody>
-    </Table>
+      </Col>
+    </Row>
   )
 };
 const TypeToMemoChartComponent = Object.keys(TypeToChartComponent)
@@ -134,15 +142,15 @@ const TypeToMemoChartComponent = Object.keys(TypeToChartComponent)
   }))
   .reduce((a, b) => ({ ...a, ...b }));
 
-const renderChart = Component => ({ resultSet, error, ...props }) =>
-  (resultSet && <Component resultSet={resultSet} {...props} />) ||
-  (error && error.toString()) || <CircularProgress />;
+const renderChart = Component => ({ resultSet, error }) =>
+  (resultSet && <Component resultSet={resultSet} />) ||
+  (error && error.toString()) || <Spin />;
 
 const ChartRenderer = ({ vizState, cubejsApi }) => {
-  const { query, chartType, ...options } = vizState;
+  const { query, chartType } = vizState;
   const component = TypeToMemoChartComponent[chartType];
   const renderProps = useCubeQuery(query, { subscribe: true, cubejsApi });
-  return component && renderChart(component)({ ...options, ...renderProps });
+  return component && renderChart(component)(renderProps);
 };
 
 ChartRenderer.propTypes = {
