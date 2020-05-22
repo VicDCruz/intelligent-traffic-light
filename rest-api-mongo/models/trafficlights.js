@@ -7,4 +7,4 @@ var trafficlightSchema = new Schema({
 }, { timestamps: { createdAt: 'created_at' } });
 
 
-module.exports = mongoose.model('trafficlight', trafficlightSchema);
+module.exports = mongoose.model('trafficlight', trafficlightSchema, 'history');
