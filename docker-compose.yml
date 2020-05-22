@@ -18,8 +18,6 @@ services:
         restart: always
         environment: 
             MONGO_INITDB_DATABASE: trafficlights
-        volumes: 
-            - ./history.json:/history.json
     ngrok:
         image: wernight/ngrok
         container_name: ngrok
@@ -39,6 +37,7 @@ services:
             - './mongo-dashboard/:/output'
             - './history.json:/history.json'
             - './mongo-dashboard/start-cube.sh:/start-cube.sh'
+            - ./events-dump:/events-dump
         ports:
             - 3000:3000
             - 4000:4000
