@@ -13,7 +13,7 @@ module.exports = function (app) {
   var TrafficlightCollection = require('../models/trafficlights');
 
   changeBehavior = (value, id, identifier) => {
-    output = { _id: id, identifier: identifier, total: value, behavior: "valor" };
+    output = { identifier: identifier, behavior: "valor" };
     return output;
   };
 
