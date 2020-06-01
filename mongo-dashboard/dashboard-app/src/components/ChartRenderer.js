@@ -20,7 +20,7 @@ const TypeToChartComponent = {
     };
     const options = {
       legend: {
-        display: false
+        display: true
       },
       scales: {
         yAxes: [{

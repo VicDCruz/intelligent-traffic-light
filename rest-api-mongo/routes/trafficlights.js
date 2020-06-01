@@ -12,8 +12,14 @@ module.exports = function (app) {
 
   var TrafficlightCollection = require('../models/trafficlights');
 
-  changeBehavior = (value, id, identifier) => {
-    output = { identifier: identifier, behavior: "valor" };
+  const behaviors = ['A', 'B', 'C']
+
+  changeBehavior = (value1, value2) => {
+    console.log(behaviors);
+    output = 
+      behaviors[parseInt(Math.random() * behaviors.length)] + 
+      "," + 
+      behaviors[parseInt(Math.random() * behaviors.length)];
     return output;
   };
 
@@ -49,8 +55,8 @@ module.exports = function (app) {
     console.log(req.body);
 
     var trafficlight = new TrafficlightCollection({
-      identifier: req.body.identifier,
-      total: req.body.total,
+      value1: req.body.value1,
+      value2: req.body.value2,
     });
 
     trafficlight.save(err => {
@@ -62,7 +68,7 @@ module.exports = function (app) {
       }
     });
 
-    res.send(changeBehavior(req.body.total, trafficlight._id, req.body.identifier));
+    res.send(changeBehavior(req.body.value1, req.body.value2));
   };
 
   //POST - Insert a new Trafficlight in the DB

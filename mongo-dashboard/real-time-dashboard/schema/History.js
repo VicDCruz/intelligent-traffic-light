@@ -13,11 +13,18 @@ cube(`History`, {
   measures: {
     count: {
       type: `count`,
-      drillMembers: [createdAt, identifier, updatedat]
+      drillMembers: [createdAt, updatedat]
     },
-    
+    total1: {
+      sql: `value1`,
+      type: `sum`,
+    },
+    total2: {
+      sql: `value2`,
+      type: `sum`,
+    },
     total: {
-      sql: `total`,
+      sql: `value1 + value2`,
       type: `sum`
     }
   },
@@ -29,13 +36,18 @@ cube(`History`, {
     },
 
     formatTime: {
-      sql: `DATE_FORMAT(DATE_SUB(created_at, INTERVAL 5 HOUR), "%h:%i:%s")`,
+      sql: `DATE_FORMAT(DATE_SUB(created_at, INTERVAL 5 HOUR), "%H:%i")`,
       type: `string`
     },
-    
-    identifier: {
-      sql: `identifier`,
-      type: `string`
+
+    value1: {
+      sql: `value1`,
+      type: `number`
+    },
+
+    value2: {
+      sql: `value2`,
+      type: `number`
     },
     
     updatedat: {

@@ -9,45 +9,47 @@ const DashboardItems = [
     name: "Total al día de hoy",
     vizState: {
       query: {
-        "dimensions": [],
+        "measures": [
+          "History.total"
+        ],
         "timeDimensions": [
           {
             "dimension": "History.createdAt",
             "dateRange": "Today"
           }
         ],
-        "measures": [
-          "History.total"
-        ],
-        "filters": []
+        "filters": [],
+        "timezone": 'America/Mexico_City',
       },
       chartType: "number"
     },
     size: 8
   },
-  {
-    id: 1,
-    name: "Contribución por semáforo",
-    vizState: {
-      query: {
-        "dimensions": [
-          "History.identifier"
-        ],
-        "timeDimensions": [
-          {
-            "dimension": "History.createdAt",
-            "dateRange": "Today"
-          }
-        ],
-        "measures": [
-          "History.count"
-        ],
-        "filters": []
-      },
-      chartType: "pie"
-    },
-    size: 8
-  },
+  // {
+  //   id: 1,
+  //   name: "Contribución por semáforo",
+  //   vizState: {
+  //     query: {
+  //       "measures": [
+  //         "History.total1",
+  //         "History.total2"
+  //       ],
+  //       "timeDimensions": [
+  //         {
+  //           "dimension": "History.createdAt",
+  //           "dateRange": "Today"
+  //         }
+  //       ],
+  //       "dimensions": [
+  //         "History.formatTime"
+  //       ],
+  //       "filters": [],
+  //       "timezone": 'America/Mexico_City',
+  //     },
+  //     chartType: "pie"
+  //   },
+  //   size: 8
+  // },
   {
     id: 2,
     name: "Al día de hoy",
@@ -80,16 +82,26 @@ const DashboardItems = [
     name: "Muestras por semáforo",
     vizState: {
       query: {
-        "dimensions": [
-          "History.identifier"
-        ],
-        "timeDimensions": [],
         "measures": [
-          "History.count"
+          "History.total1",
+          "History.total2"
         ],
-        "filters": []
+        "timeDimensions": [
+          {
+            "dimension": "History.createdAt",
+            "dateRange": "Today"
+          }
+        ],
+        "dimensions": [
+          "History.formatTime"
+        ],
+        "filters": [],
+        "timezone": 'America/Mexico_City',
+        "order": {
+          "History.formatTime": 'asc'
+        }
       },
-      chartType: "bar"
+      chartType: "line"
     },
     size: 12
   },
